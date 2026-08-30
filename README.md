@@ -1,113 +1,279 @@
-# vinext-starter
+# QampusCare
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+QampusCare is a frontend\-first Faculty Lifecycle Management System designed to help universities manage faculty recruitment, multilingual onboarding, advisor workload balancing, scheduling approvals, performance feedback, and administrative accountability\.
 
-## Prerequisites
+The project addresses a common challenge in universities serving large student populations: newly recruited faculty may be onboarded inconsistently, while student advisors may receive unequal workloads\. These conditions can result in delayed and inconsistent academic support\.
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+> **Current status:** QampusCare is an interactive frontend prototype powered by synthetic demonstration data. A complete production backend, database, authentication system, and live institutional integrations have not yet been implemented.
 
-## Sites Lifecycle
+## Problem Statement
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
+Universities expanding digital\-first learning, particularly in Tier 2 and Tier 3 cities, need a better way to:
 
-This starter does not use `wrangler.jsonc`.
+- Recruit and track adjunct faculty\.
+- Standardise faculty onboarding\.
+- Deliver onboarding in multiple languages\.
+- Monitor advisor capacity and utilisation\.
+- Balance student\-advisor workloads\.
+- Review and approve proposed scheduling changes\.
+- Connect faculty performance with student outcomes\.
+- Maintain transparent administrative audit records\.
 
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
+## Proposed Solution
 
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
+QampusCare combines the complete faculty\-management journey into one interface:
 
-## Included Shape
+**Recruit → Onboard → Verify Readiness → Assign Workload → Approve → Evaluate → Improve**
 
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+The application contains dedicated interfaces for university administrators, department heads, faculty members, and student advisors\.
 
-## Workspace Auth Headers
+## Features
 
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
+### Executive Dashboard
 
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+- Active faculty, advisor, and student statistics
+- Advisor\-to\-student ratio
+- Onboarding completion and faculty\-retention indicators
+- Department workload distribution
+- Risk and attention indicators
+- Recent activity feed
 
-Treat the full name as optional and fall back to email when it is absent:
+### Faculty Recruitment
 
-```tsx
-import { headers } from "next/headers";
+- Candidate pipeline with Applied, Screening, Interview, Documents, and Offered stages
+- Candidate\-role match indicators
+- Add synthetic candidates through a form
+- Advance candidates between stages
+- Search and department\-level visibility
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
+The displayed match percentages are synthetic\. In a production system, they would be calculated from configurable university criteria such as qualifications, teaching experience, subject expertise, required skills, and document readiness\.
 
-  const displayName = fullName ?? email;
-  // ...
-}
+### Multilingual Faculty Onboarding
+
+- English, Hindi, and Odia language options
+- Profile and document verification
+- University\-policy modules
+- Academic\-integrity training
+- Learning\-platform orientation
+- Department orientation
+- Assessment and teaching\-readiness review
+- Approve, request\-changes, and reminder actions
+
+### Advisor Workload Management
+
+- Current student count and recommended capacity
+- Advisor utilisation percentage
+- Response\-time and at\-risk\-student indicators
+- Available, Balanced, Near Capacity, and Overloaded statuses
+- Department workload visualisation
+
+### Smart Scheduling
+
+- Department and academic\-term selection
+- Maximum advisor\-to\-student ratio
+- Protected student\-advisor relationships
+- Expertise\-based assignment preference
+- Simulated proposal\-generation progress
+- Before\-and\-after workload comparison
+- Human\-readable reassignment explanations
+- Approval and application workflow
+
+The current scheduling results are deterministic synthetic outputs used to demonstrate the intended workflow\. They are not produced by a live optimisation engine\.
+
+### Performance and Feedback
+
+- Student\-satisfaction indicators
+- Advisor response\-time trends
+- Student engagement
+- Course completion
+- Faculty retention
+- Workload\-adjusted performance insights
+- Constructive improvement recommendations
+
+### Activity and Audit Logs
+
+- Timestamped actions
+- Responsible actor
+- Affected record
+- Department
+- Severity and status
+- Automatically generated demonstration events
+
+### Persistent Judge Demo
+
+- Important changes are stored in browser `localStorage`\.
+- Recruitment, onboarding, scheduling, and logs survive a browser refresh\.
+- Settings includes a **Reset Judge Demo** action\.
+
+## Technology Stack
+
+- React
+- TypeScript
+- Vinext/Vite
+- Tailwind CSS
+- Shadcn UI components
+- Recharts
+- Lucide icons
+- Browser `localStorage` for demonstration persistence
+
+## Current Architecture
+
+```text
+React + TypeScript frontend
+            ↓
+Local state and demonstration services
+            ↓
+Synthetic data + browser localStorage
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## Planned Production Architecture
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+```text
+React frontend
+       ↓
+FastAPI REST API
+       ↓
+Scheduling and workflow services
+       ↓
+PostgreSQL database
+```
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with
-  `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper
-  module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can
-  prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned
-  `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+The planned backend would provide:
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+- Authentication and role\-based access control
+- Persistent faculty, candidate, advisor, and student records
+- Document storage and verification
+- Onboarding progress and assessments
+- Scheduling calculations
+- Approval transactions
+- Performance measurements
+- Secure audit events
+- Notification services
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+## Backend Limitation
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+The repository currently does **not** contain a complete backend implementation\.
 
-## Diagnostic Commands
+Therefore:
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build and verify the rendered development-preview metadata
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+- The application does not use real university records\.
+- Statistics and people shown in the interface are synthetic\.
+- Candidate\-match values are illustrative\.
+- Scheduling results are simulated\.
+- Data is stored locally in the browser rather than in a central database\.
+- Authentication and authorisation are not production\-ready\.
+- Actions are not synchronised between different devices or users\.
 
-Use build commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
+This limitation is intentional for the present frontend\-first prototype\. The interface establishes the user roles, workflows, states, measurements, and data contracts required for a future backend implementation\.
 
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
+## Installation
 
-## Learn More
+### Prerequisites
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- Node\.js 22 or later
+- npm
+- Git
+
+### Run Locally
+
+```bash
+git clone YOUR_REPOSITORY_URL
+cd QampusCare-Frontend
+npm install
+npm run dev
+```
+
+Open the local URL displayed in the terminal, normally:
+
+```text
+http://localhost:3000
+```
+
+or:
+
+```text
+http://localhost:5173
+```
+
+## Recommended Demonstration
+
+1. Open the Executive Overview and identify workload or onboarding warnings\.
+2. Open Recruitment and add or advance a candidate\.
+3. Open Onboarding and select **A\. Rao**\.
+4. Approve teaching readiness\.
+5. Open Advisor Workload and identify overloaded advisors\.
+6. Generate a balanced scheduling proposal\.
+7. Review the before\-and\-after statistics and explanations\.
+8. Approve and apply the proposal\.
+9. Open Activity Logs and show the newly created events\.
+10. Return to Overview and show the updated metrics\.
+11. Use **Settings → Reset Judge Demo** before repeating the presentation\.
+
+## Measurement Framework
+
+QampusCare is designed to measure:
+
+- Advisor\-to\-student ratio
+- Faculty\-onboarding completion
+- Faculty retention
+- Advisor workload balance
+- Response time
+- Student satisfaction
+- Student engagement
+- Course completion
+
+All measurements in the current version are synthetic demonstration values\.
+
+## Future Development(To DOs)
+
+- Build a FastAPI backend\.
+- Add PostgreSQL persistence\.
+- Implement secure authentication and role\-based permissions\.
+- Replace simulated scheduling with a classical constraint solver\.
+- Add document upload and verification\.
+- Add email and notification services\.
+- Define validated formulas for candidate matching and performance indicators\.
+- Connect authorised university systems\.
+- Add automated tests and deployment workflows\.
+
+## Ethical and Privacy Note
+
+QampusCare does not currently contain real faculty or student data\. All names, records, workload values, performance indicators, and activity events are fictional and intended exclusively for demonstration\.
+
+Performance indicators should support mentoring, recognition, training, and workload correction\. They should not be used as unexplained automatic grounds for disciplinary decisions\.
+
+## Project Status
+
+|Component                  |Status|
+|---------------------------|------------
+|Responsive frontend       |Implemented |
+
+|Recruitment interface     |Implemented |
+
+|Onboarding interface     |Implemented 
+
+|Workload dashboard       |Implemented |
+
+|Scheduling workflow UI     |Implemented |
+
+|Performance dashboard     |Implemented |
+
+|Activity logs             |Implemented  |
+
+|Synthetic demo interactions|Implemented  
+
+|Browser persistence       |Implemented  |
+
+|Production backend      |Not implemented|
+
+|Central database        |Not implemented|
+
+|Real scheduling engine  |Not implemented|
+
+|Production authentication|Notimplemented|
+
+## Conclusion
+
+QampusCare demonstrates how a university can bring recruitment, onboarding, workload management, approvals, performance feedback, and accountability into one connected faculty lifecycle\.
+
+The current version should be evaluated as an interactive high\-fidelity frontend prototype and workflow blueprint, not as a completed production system
