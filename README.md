@@ -277,3 +277,8 @@ Performance indicators should support mentoring, recognition, training, and work
 QampusCare demonstrates how a university can bring recruitment, onboarding, workload management, approvals, performance feedback, and accountability into one connected faculty lifecycle\.
 
 The current version should be evaluated as an interactive high\-fidelity frontend prototype and workflow blueprint, not as a completed production system
+
+## Future Quantum-Computing Scope
+
+In future versions, QampusCare may experimentally explore quantum and quantum-inspired optimization for large-scale advisor allocation and timetable scheduling. Complex university scheduling can involve thousands of possible assignments and constraints, including advisor capacity, expertise, availability, departmental requirements, and protected student relationships. We plan to formulate these challenges as optimization problems and compare approaches such as QUBO and QAOA with established classical constraint solvers. Quantum methods will only be adopted if testing demonstrates a measurable advantage in solution quality, runtime, or scalability. Quantum computing is not implemented in the current prototype.
+
